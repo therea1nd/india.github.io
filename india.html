@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การใช้เทคโนโลยีสารสนเทศอย่างรู้เท่าทันและปลอดภัย</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Prompt & Material Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #1e293b;
+            background-image: linear-gradient(to bottom, #1e293b, #0f172a);
+            color: #e2e8f0;
+        }
+        
+        /* Tab Styles */
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background-color: #4ade80;
+            color: #0f172a;
+            font-weight: 700;
+        }
+        .tab-btn:not(.active):hover {
+            background-color: #2b3a50;
+        }
+
+        /* Lesson Content */
+        .lesson-content {
+            display: none;
+        }
+        .lesson-content.active {
+            display: block;
+        }
+        
+        /* Drag & Drop Styles */
+        .draggable-card {
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+        .draggable-card:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+        }
+        .drop-zone {
+            border: 2px dashed #475569;
+            transition: all 0.3s ease;
+            min-height: 80px;
+        }
+        .drop-zone.drag-over {
+            background-color: #334155;
+            border-color: #86efac;
+        }
+        .drop-zone .draggable-card {
+            cursor: default;
+        }
+
+        /* Accordion Styles */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .accordion-item.open .accordion-content {
+            max-height: 500px; /* Adjust as needed */
+        }
+        .accordion-item.open .accordion-icon {
+            transform: rotate(180deg);
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Material Icons helper class */
+        .material-icons {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Top Ribbon Navigation -->
+    <div class="bg-slate-900 shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto flex flex-wrap justify-center gap-2 p-2" id="tab-container">
+            <!-- NOTE: Replace the href below with your actual Google Form link -->
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0UaJzN6YVxPn6BJQxnYZVkNebovMtwMtFhtlhHZxlWASQxA/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="tab-btn w-full sm:w-auto px-6 py-3 rounded-lg text-slate-300">ข้อสอบก่อนเรียน</a>
+            <button data-tab="lesson1" class="tab-btn active w-full sm:w-auto px-6 py-3 rounded-lg text-slate-300">บทที่ 1 รู้จัก IT</button>
+            <button data-tab="lesson2" class="tab-btn w-full sm:w-auto px-6 py-3 rounded-lg text-slate-300">บทที่ 2 คิดอย่างมีวิจารณญาณ</button>
+            <button data-tab="lesson3" class="tab-btn w-full sm:w-auto px-6 py-3 rounded-lg text-slate-300">บทที่ 3 การตรวจสอบข้อมูล</button>
+            <button data-tab="lesson4" class="tab-btn w-full sm:w-auto px-6 py-3 rounded-lg text-slate-300">บทที่ 4 ใช้งานอย่างปลอดภัย</button>
+            <a href="spatial.io" target="_blank" rel="noopener noreferrer" class="tab-btn w-full sm:w-auto px-6 py-3 rounded-lg text-slate-300">ห้อง Gallery Walk Metaverse</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfJFgxiqHfmbbOtrnRDmDxQlF32kDYt33GZDhD5Shp1Cz_PWw/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="tab-btn w-full sm:w-auto px-6 py-3 rounded-lg text-slate-300">ข้อสอบหลังเรียน</a>
+        </nav>
+    </div>
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-bold text-white tracking-wide">
+                การใช้เทคโนโลยีสารสนเทศ
+                <span class="block text-green-400">อย่างรู้เท่าทันและปลอดภัย</span>
+            </h1>
+            <p class="text-slate-400 mt-2">บทเรียนสำหรับนักเรียนชั้นมัธยมศึกษาปีที่ 3</p>
+        </header>
+
+        <!-- Content Area -->
+        <main id="content-container">
+            <!-- บทที่ 1: รู้จัก IT และนวัตกรรม -->
+            <section id="lesson1" class="lesson-content active">
+                <div class="bg-slate-800 p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-green-400 mb-6">บทที่ 1 รู้จัก IT และนวัตกรรม</h2>
+                    
+                    <!-- ส่วนที่ 1: ประโยชน์ของ IT -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-slate-200 mb-4">วัตถุประสงค์ของการใช้เทคโนโลยีสารสนเทศ</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-700 p-4 rounded-lg flex items-center gap-4"><span class="material-icons text-green-400 text-3xl">work</span><span>ด้านการทำงาน เพิ่มประสิทธิภาพ ลดขั้นตอน และทำงานร่วมกันได้ง่ายขึ้น</span></div>
+                            <div class="bg-slate-700 p-4 rounded-lg flex items-center gap-4"><span class="material-icons text-green-400 text-3xl">school</span><span>ด้านการศึกษา เข้าถึงแหล่งความรู้ได้ไม่จำกัด และมีรูปแบบการเรียนที่หลากหลาย</span></div>
+                            <div class="bg-slate-700 p-4 rounded-lg flex items-center gap-4"><span class="material-icons text-green-400 text-3xl">devices</span><span>ด้านการสื่อสาร ติดต่อสื่อสารได้รวดเร็ว ทุกที่ ทุกเวลา ผ่านอุปกรณ์ต่างๆ</span></div>
+                            <div class="bg-slate-700 p-4 rounded-lg flex items-center gap-4"><span class="material-icons text-green-400 text-3xl">health_and_safety</span><span>ด้านสาธารณสุข พัฒนาการรักษา ติดตามสุขภาพ และให้คำปรึกษาทางไกล</span></div>
+                        </div>
+                    </div>
+
+                    <!-- ส่วนที่ 2: ข้อดีและข้อเสีย -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-slate-200 mb-4">ข้อดีของเทคโนโลยีสารสนเทศ</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2"><span class="material-icons text-green-500">add_circle</span><span>เพิ่มความสะดวกสบายในชีวิตประจำวัน</span></li>
+                                <li class="flex items-start gap-2"><span class="material-icons text-green-500">add_circle</span><span>เป็นช่องทางในการแสดงความคิดเห็นและประชาธิปไตย</span></li>
+                                <li class="flex items-start gap-2"><span class="material-icons text-green-500">add_circle</span><span>สร้างความบันเทิงและผ่อนคาย</span></li>
+                                <li class="flex items-start gap-2"><span class="material-icons text-green-500">add_circle</span><span>กระตุ้นการพัฒนาเศรษฐกิจและสังคม</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-slate-200 mb-4">ข้อเสียของเทคโนโลยีสารสนเทศ</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2"><span class="material-icons text-red-400">remove_circle</span><span>อาจทำให้เกิดปัญหาการว่างงาน เพราะใช้เทคโนโลยีแทนคน</span></li>
+                                <li class="flex items-start gap-2"><span class="material-icons text-red-400">remove_circle</span><span>เกิดช่องว่างทางสังคม (Digital Divide) ระหว่างคนที่มีและไม่มีเทคโนโลยี</span></li>
+                                <li class="flex items-start gap-2"><span class="material-icons text-red-400">remove_circle</span><span>อาจทำให้เกิดปัญหาสุขภาพ เช่น Office Syndrome, สายตา</span></li>
+                                <li class="flex items-start gap-2"><span class="material-icons text-red-400">remove_circle</span><span>เป็นช่องทางของอาชญากรรมทางคอมพิวเตอร์</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- ส่วนที่ 3: กิจกรรม "ออกแบบนวัตกรรมไอที" -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-200 mb-4">กิจกรรม: ออกแบบนวัตกรรม</h3>
+                        <div class="bg-slate-700 p-6 rounded-lg">
+                            <p class="text-slate-400 mb-4">ลองจินตนาการว่านักเรียนเป็นนักประดิษฐ์ แล้วออกแบบเทคโนโลยีหรือแอปพลิเคชันเพื่อแก้ปัญหาที่สนใจ</p>
+                            <form id="innovation-form" class="space-y-4">
+                                <input type="text" name="studentName" placeholder="ชื่อ-นามสกุล" class="w-full bg-slate-800 p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-green-400" required>
+                                <input type="text" name="techName" placeholder="ชื่อเทคโนโลยี/แอปพลิเคชัน" class="w-full bg-slate-800 p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-green-400" required>
+                                <input type="text" name="problem" placeholder="ช่วยแก้ปัญหาอะไร" class="w-full bg-slate-800 p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-green-400" required>
+                                <textarea name="howItWorks" placeholder="หลักการทำงาน" rows="3" class="w-full bg-slate-800 p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-green-400" required></textarea>
+                                <input type="text" name="targetAudience" placeholder="กลุ่มเป้าหมายคือใคร" class="w-full bg-slate-800 p-3 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-green-400" required>
+                                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-slate-900 font-bold py-3 px-4 rounded-lg transition-colors">ส่งแนวคิด</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- บทที่ 2: คิดอย่างมีวิจารณญาณ (เหตุผลวิบัติ) -->
+            <section id="lesson2" class="lesson-content">
+                <div class="bg-slate-800 p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-green-400 mb-6">บทที่ 2: คิดอย่างมีวิจารณญาณ (เหตุผลวิบัติ)</h2>
+                    
+                    <!-- ส่วนที่ 1: เหตุผลวิบัติคืออะไร? -->
+                    <div class="mb-8 bg-slate-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold text-slate-200 mb-2">เหตุผลวิบัติ (Fallacy) คืออะไร?</h3>
+                        <p class="text-slate-400">คือการใช้เหตุผลที่ดูเหมือนจะสมเหตุสมผล แต่จริงๆ แล้วมีข้อบกพร่องทางตรรกะ ซึ่งมักถูกใช้ในการโน้มน้าวใจหรือโฆษณาชวนเชื่อ ทำให้เราตัดสินใจผิดพลาดได้ง่าย</p>
+                    </div>
+
+                    <!-- ส่วนที่ 2: กิจกรรม "ลาก-วาง จับคู่เหตุผลวิบัติ" -->
+                    <div>
+                         <h3 class="text-xl font-semibold text-slate-200 mb-4">กิจกรรม: ลาก-วาง จับคู่เหตุผลวิบัติ</h3>
+                         <p class="text-slate-400 mb-4">ลองลากข้อความตัวอย่างด้านล่าง ไปวางในช่องประเภทของเหตุผลวิบัติที่ถูกต้อง</p>
+
+                        <div class="flex flex-col lg:flex-row gap-8">
+                            <!-- Draggable Cards -->
+                            <div id="card-source" class="lg:w-1/3 space-y-4">
+                                <div class="draggable-card bg-green-500 text-slate-900 p-3 rounded-lg shadow-md" draggable="true" data-fallacy="ad_hominem">“เธอจะมาพูดได้ยังไง เธอยังอ้วนอยู่เลย!”</div>
+                                <div class="draggable-card bg-green-500 text-slate-900 p-3 rounded-lg shadow-md" draggable="true" data-fallacy="ad_populum">“เพื่อนในห้องทุกคนก็ไม่ทำการบ้าน ฉันก็ไม่ทำเหมือนกัน”</div>
+                                <div class="draggable-card bg-green-500 text-slate-900 p-3 rounded-lg shadow-md" draggable="true" data-fallacy="appeal_to_fear">“ถ้าเธอไม่ตั้งใจเรียน ชีวิตเธอจะล้มเหลวแน่!”</div>
+                                <div class="draggable-card bg-green-500 text-slate-900 p-3 rounded-lg shadow-md" draggable="true" data-fallacy="cherry_picking">“ผลิตภัณฑ์นี้ดีจริง ดูสิมีรีวิว 5 ดาวตั้งหลายคน (แต่ไม่บอกว่ามี 1 ดาวเป็นร้อย)”</div>
+                                <div class="draggable-card bg-green-500 text-slate-900 p-3 rounded-lg shadow-md" draggable="true" data-fallacy="red_herring">“ถามเรื่องเศรษฐกิจทำไม มาดูเรื่องมารยาทของนักการเมืองดีกว่า”</div>
+                            </div>
+                            
+                            <!-- Drop Zones -->
+                            <div class="lg:w-2/3 space-y-4">
+                                <div class="bg-slate-700 p-4 rounded-lg">
+                                    <p class="font-semibold mb-2">1. โจมตีตัวบุคคล (Ad Hominem)</p>
+                                    <div class="drop-zone p-2 rounded-md" data-fallacy="ad_hominem"></div>
+                                </div>
+                                <div class="bg-slate-700 p-4 rounded-lg">
+                                    <p class="font-semibold mb-2">2. เหตุเพราะคนส่วนใหญ่เชื่อ (Ad Populum)</p>
+                                    <div class="drop-zone p-2 rounded-md" data-fallacy="ad_populum"></div>
+                                </div>
+                                <div class="bg-slate-700 p-4 rounded-lg">
+                                    <p class="font-semibold mb-2">3. ขู่ให้กลัว (Appeal to Fear)</p>
+                                    <div class="drop-zone p-2 rounded-md" data-fallacy="appeal_to_fear"></div>
+                                </div>
+                                <div class="bg-slate-700 p-4 rounded-lg">
+                                    <p class="font-semibold mb-2">4. เลือกเสนอข้อมูลบางด้าน (Cherry Picking)</p>
+                                    <div class="drop-zone p-2 rounded-md" data-fallacy="cherry_picking"></div>
+                                </div>
+                                 <div class="bg-slate-700 p-4 rounded-lg">
+                                    <p class="font-semibold mb-2">5. เหตุผลไม่สัมพันธ์กัน (Red Herring)</p>
+                                    <div class="drop-zone p-2 rounded-md" data-fallacy="red_herring"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- บทที่ 3: การตรวจสอบข้อมูล (PROMPT) -->
+            <section id="lesson3" class="lesson-content">
+                <div class="bg-slate-800 p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-green-400 mb-6">บทที่ 3: การตรวจสอบข้อมูล (PROMPT)</h2>
+                    
+                     <!-- ส่วนที่ 1: ทำไมต้องตรวจสอบข้อมูล? -->
+                    <div class="mb-8 bg-slate-700 p-4 rounded-lg">
+                        <h3 class="text-xl font-semibold text-slate-200 mb-2">ทำไมต้องตรวจสอบข้อมูล?</h3>
+                        <p class="text-slate-400">ในยุคที่ข้อมูลข่าวสารมีอยู่มากมาย เราต้องมีความสามารถในการประเมินความน่าเชื่อถือของข้อมูล เพื่อป้องกันตัวเองจากข่าวปลอม (Fake News) และข้อมูลที่บิดเบือน ซึ่งอาจนำไปสู่ความเข้าใจผิดและสร้างความเสียหายได้</p>
+                    </div>
+
+                    <!-- ส่วนที่ 2: หลักการ PROMPT -->
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-200 mb-4">หลักการ PROMPT สำหรับประเมินข้อมูล</h3>
+                        <div class="space-y-2" id="accordion-container">
+                            <div class="accordion-item bg-slate-700 rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                                    <span class="font-bold text-lg"><span class="text-green-400">P</span> - Presentation (การนำเสนอ)</span>
+                                    <span class="material-icons accordion-icon">expand_more</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p>ข้อมูลมีการนำเสนอที่ชัดเจน เป็นระเบียบหรือไม่? มีการใช้ภาษาที่ถูกต้องเหมาะสม ไม่มีคำสะกดผิด หรือใช้ภาษาที่กระตุ้นอารมณ์มากเกินไปหรือไม่?</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item bg-slate-700 rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                                    <span class="font-bold text-lg"><span class="text-green-400">R</span> - Relevance (ความสัมพันธ์)</span>
+                                    <span class="material-icons accordion-icon">expand_more</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p>เนื้อหาของข้อมูลตรงกับหัวข้อหรือไม่? ข้อมูลนี้เกี่ยวข้องกับสิ่งที่เราต้องการจะรู้จริงๆ หรือเป็นเพียงข้อมูลนอกประเด็น?</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item bg-slate-700 rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                                    <span class="font-bold text-lg"><span class="text-green-400">O</span> - Objectivity (วัตถุประสงค์)</span>
+                                    <span class="material-icons accordion-icon">expand_more</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p>ข้อมูลนี้ถูกสร้างขึ้นเพื่อวัตถุประสงค์ใด? เพื่อให้ความรู้, โน้มน้าวใจ, หรือเพื่อขายสินค้า? มีความเป็นกลางหรือไม่ หรือมีเจตนาแอบแฝง?</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item bg-slate-700 rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                                    <span class="font-bold text-lg"><span class="text-green-400">M</span> - Method (วิธีการ)</span>
+                                    <span class="material-icons accordion-icon">expand_more</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p>ข้อมูลนี้ได้มาด้วยวิธีการใด? มีการรวบรวมข้อมูลอย่างเป็นระบบหรือไม่? หากเป็นงานวิจัย มีระเบียบวิธีวิจัยที่น่าเชื่อถือหรือไม่?</p>
+                                </div>
+                            </div>
+                             <div class="accordion-item bg-slate-700 rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                                    <span class="font-bold text-lg"><span class="text-green-400">P</span> - Provenance (แหล่งที่มา)</span>
+                                    <span class="material-icons accordion-icon">expand_more</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p>ใครคือผู้สร้างข้อมูลนี้? แหล่งที่มามีความน่าเชื่อถือหรือไม่? สามารถตรวจสอบหรืออ้างอิงกลับไปยังต้นตอของข้อมูลได้หรือไม่?</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item bg-slate-700 rounded-lg">
+                                <button class="accordion-header w-full flex justify-between items-center text-left p-4">
+                                    <span class="font-bold text-lg"><span class="text-green-400">T</span> - Timeliness (เวลา)</span>
+                                    <span class="material-icons accordion-icon">expand_more</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p>ข้อมูลถูกสร้างหรือเผยแพร่เมื่อใด? ยังเป็นข้อมูลที่ทันสมัยอยู่หรือไม่? ในบางสถานการณ์ ข้อมูลเก่าอาจใช้ไม่ได้ผลแล้ว</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- บทที่ 4: ใช้งานอย่างปลอดภัย -->
+            <section id="lesson4" class="lesson-content">
+                <div class="bg-slate-800 p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-green-400 mb-6">บทที่ 4: ใช้งานอย่างปลอดภัยและสถานการณ์ฉุกเฉิน</h2>
+
+                    <!-- ส่วนที่ 1: ภัยคุกคามทางไซเบอร์ -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-slate-200 mb-4">ภัยคุกคามทางไซเบอร์ที่พบบ่อย</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
+                            <div class="bg-slate-700 p-4 rounded-lg"><span class="material-icons text-red-400 text-4xl mb-2">bug_report</span><p>มัลแวร์ (Malware)</p></div>
+                            <div class="bg-slate-700 p-4 rounded-lg"><span class="material-icons text-red-400 text-4xl mb-2">phishing</span><p>ฟิชชิง (Phishing)</p></div>
+                            <div class="bg-slate-700 p-4 rounded-lg"><span class="material-icons text-red-400 text-4xl mb-2">sentiment_very_dissatisfied</span><p>การกลั่นแกล้ง (Cyberbullying)</p></div>
+                            <div class="bg-slate-700 p-4 rounded-lg"><span class="material-icons text-red-400 text-4xl mb-2">no_encryption</span><p>การละเมิดความเป็นส่วนตัว</p></div>
+                            <div class="bg-slate-700 p-4 rounded-lg"><span class="material-icons text-red-400 text-4xl mb-2">article</span><p>ข่าวปลอม (Fake News)</p></div>
+                        </div>
+                    </div>
+
+                    <!-- ส่วนที่ 2: กิจกรรม "สถานการณ์ฉุกเฉินทางไซเบอร์" -->
+                    <div>
+                         <h3 class="text-xl font-semibold text-slate-200 mb-4">กิจกรรม: สถานการณ์ฉุกเฉินทางไซเบอร์</h3>
+                         <div id="cyber-scenario-container" class="bg-slate-700 p-6 rounded-lg text-center">
+                            <!-- Scenarios will be injected here by JavaScript -->
+                         </div>
+                         <div class="flex justify-between mt-4">
+                             <button id="prev-scenario-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg transition-colors">ก่อนหน้า</button>
+                             <span id="scenario-counter" class="text-slate-400 self-center"></span>
+                             <button id="next-scenario-btn" class="bg-green-500 hover:bg-green-600 text-slate-900 font-bold py-2 px-4 rounded-lg transition-colors">ถัดไป</button>
+                         </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Tab Navigation Logic ---
+            const tabContainer = document.getElementById('tab-container');
+            const contentContainer = document.getElementById('content-container');
+            
+            tabContainer.addEventListener('click', (e) => {
+                // Ensure we only handle clicks on BUTTONS meant for tab switching, not the Google Form link (which is an A tag)
+                if (e.target.tagName === 'BUTTON' && e.target.classList.contains('tab-btn')) {
+                    // Update buttons state
+                    tabContainer.querySelectorAll('button.tab-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Update content visibility
+                    const targetTab = e.target.dataset.tab;
+                    contentContainer.querySelectorAll('.lesson-content').forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetTab) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // --- Lesson 1: Innovation Form Logic ---
+            const innovationForm = document.getElementById('innovation-form');
+            if(innovationForm) {
+                innovationForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    // NOTE: Replace this URL with the NEW Web App URL you just generated from "New Deployment".
+                    const webAppUrl = 'https://script.google.com/macros/s/AKfycbx_Fn5p9gcjz5k1kC6AxfdJQl6cgIDP0XBJleZl-6pSoGXV6lse5HPpTirIhVjMdNat/exec';
+                    const form = e.target;
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+
+                    // Show a loading message
+                    Swal.fire({
+                        title: 'กำลังส่งข้อมูล...',
+                        text: 'กรุณารอสักครู่',
+                        allowOutsideClick: false,
+                        background: '#1e293b',
+                        color: '#e2e8f0',
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // FIX: Changed fetch mode to 'no-cors' to bypass browser's CORS policy issues with Google Script redirects.
+                    // This sends the data without waiting for a response, which is suitable for form submissions.
+                    fetch(webAppUrl, {
+                        method: 'POST',
+                        mode: 'no-cors', // This is the key change to fix "Failed to fetch"
+                        body: JSON.stringify(data),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(() => {
+                        // With 'no-cors', we can't read the server's response.
+                        // We assume the submission was successful if the fetch promise resolves.
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'ส่งแนวคิดสำเร็จ!',
+                            text: 'เยี่ยมไปเลย! ข้อมูลของคุณถูกส่งไปบันทึกเรียบร้อยแล้ว',
+                            background: '#1e293b',
+                            color: '#e2e8f0',
+                            confirmButtonColor: '#4ade80'
+                        });
+                        form.reset();
+                    })
+                    .catch(error => {
+                        // This will now only catch actual network errors, not CORS blocks.
+                        console.error('Network error sending data to Google Script:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด!',
+                            html: `ไม่สามารถส่งข้อมูลได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของท่าน`,
+                            background: '#1e293b',
+                            color: '#e2e8f0',
+                            confirmButtonColor: '#f87171'
+                        });
+                    });
+                });
+            }
+
+            // --- Lesson 2: Drag and Drop Logic ---
+            const draggables = document.querySelectorAll('.draggable-card');
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let draggedItem = null;
+            let correctDrops = 0;
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target;
+                    setTimeout(() => e.target.style.display = 'none', 0);
+                });
+                draggable.addEventListener('dragend', () => {
+                    setTimeout(() => {
+                        if (draggedItem) { // Check if draggedItem still exists
+                           draggedItem.style.display = 'block';
+                           draggedItem = null;
+                        }
+                    }, 0);
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const targetZone = e.target.closest('.drop-zone');
+                    if(targetZone) targetZone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', e => {
+                    const targetZone = e.target.closest('.drop-zone');
+                     if(targetZone) targetZone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const dropZone = e.target.closest('.drop-zone');
+                    if(!dropZone) return;
+
+                    dropZone.classList.remove('drag-over');
+                    
+                    if (draggedItem && dropZone.dataset.fallacy === draggedItem.dataset.fallacy) {
+                        // Correct drop
+                        dropZone.innerHTML = ''; // Clear placeholder if any
+                        dropZone.appendChild(draggedItem);
+                        draggedItem.setAttribute('draggable', 'false');
+                        draggedItem.style.cursor = 'default';
+                        
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'ถูกต้อง!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            background: '#10B981',
+                            color: '#FFFFFF'
+                        });
+                        correctDrops++;
+                        if (correctDrops === draggables.length) {
+                             Swal.fire({
+                                icon: 'success',
+                                title: 'เก่งมาก!',
+                                text: 'คุณเข้าใจเรื่องเหตุผลวิบัติได้เป็นอย่างดี!',
+                                background: '#1e293b',
+                                color: '#e2e8f0',
+                                confirmButtonColor: '#4ade80'
+                            });
+                        }
+
+                    } else {
+                        // Incorrect drop
+                         Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'ลองอีกครั้งนะ',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            background: '#F87171',
+                            color: '#FFFFFF'
+                        });
+                    }
+                });
+            });
+
+            // --- Lesson 3: Accordion Logic ---
+            const accordionContainer = document.getElementById('accordion-container');
+            if(accordionContainer){
+                accordionContainer.addEventListener('click', (e) => {
+                    const header = e.target.closest('.accordion-header');
+                    if (header) {
+                        const item = header.parentElement;
+                        const wasOpen = item.classList.contains('open');
+                        
+                        // Optional: Close all other items
+                        // accordionContainer.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('open'));
+
+                        if(!wasOpen) {
+                           item.classList.add('open');
+                        } else {
+                           item.classList.remove('open');
+                        }
+                    }
+                });
+            }
+
+            // --- Lesson 4: Cyber Scenario Logic ---
+            const scenarios = [
+                {
+                    question: "มีอีเมลแจ้งว่าคุณได้รับรางวัลใหญ่ แต่ต้องคลิกเพื่อกรอกข้อมูลส่วนตัว ควรทำอย่างไร?",
+                    choices: [
+                        { text: "คลิกลิงก์และกรอกข้อมูลทันที", correct: false },
+                        { text: "ลบอีเมลทิ้ง ไม่ต้องสนใจ", correct: true },
+                        { text: "ส่งต่อให้เพื่อนๆดู", correct: false }
+                    ],
+                    explanation: "ถูกต้อง! อีเมลลักษณะนี้มักเป็น Phishing เพื่อหลอกขโมยข้อมูล ไม่ควรคลิกลิงก์ที่ไม่น่าไว้ใจเด็ดขาด"
+                },
+                {
+                    question: "เพื่อนโพสต์ภาพที่ทำให้คุณอับอายบนโซเชียลมีเดีย ควรทำอย่างไร?",
+                    choices: [
+                        { text: "โพสต์ด่ากลับไป", correct: false },
+                        { text: "บอกเพื่อนให้ลบ และปรึกษาผู้ปกครอง/ครู", correct: true },
+                        { text: "ไม่ต้องทำอะไร เดี๋ยวคนก็ลืม", correct: false }
+                    ],
+                    explanation: "ถูกต้อง! การใช้ความรุนแรงตอบโต้ไม่ใช่ทางแก้ ควรพูดคุยกับเพื่อนดีๆ และแจ้งผู้ใหญ่ที่ไว้ใจเพื่อขอความช่วยเหลือ"
+                },
+                {
+                    question: "ดาวน์โหลดโปรแกรมฟรีจากเว็บที่ไม่รู้จัก แล้วคอมพิวเตอร์ทำงานช้าลง ควรทำอย่างไร?",
+                    choices: [
+                        { text: "อาจติดมัลแวร์ ควรใช้โปรแกรมแอนตี้ไวรัสสแกน", correct: true },
+                        { text: "รีสตาร์ทคอมพิวเตอร์เดี๋ยวก็หาย", correct: false },
+                        { text: "ดาวน์โหลดโปรแกรมอื่นมาเพิ่ม", correct: false }
+                    ],
+                    explanation: "ถูกต้อง! การดาวน์โหลดจากแหล่งที่ไม่น่าเชื่อถือมีความเสี่ยงสูง ควรใช้โปรแกรมแอนตี้ไวรัสตรวจสอบทันที"
+                },
+                {
+                    question: "มีคนแปลกหน้าทักมาขอเป็นเพื่อน และขอข้อมูลส่วนตัว ควรทำอย่างไร?",
+                    choices: [
+                        { text: "ให้ข้อมูลไป เพราะจะได้มีเพื่อนใหม่", correct: false },
+                        { text: "ปฏิเสธ ไม่รับเป็นเพื่อน และอาจบล็อกไปเลย", correct: true },
+                    ],
+                    explanation: "ถูกต้อง! เราไม่ควรให้ข้อมูลส่วนตัวกับคนที่ไม่รู้จักบนโลกออนไลน์ เพื่อความปลอดภัยของตัวเอง"
+                },
+                {
+                    question: "เห็นข่าวที่น่าตกใจบนโซเชียลมีเดีย ควรทำอย่างไรก่อนแชร์?",
+                    choices: [
+                        { text: "รีบแชร์ทันทีให้เพื่อนรู้", correct: false },
+                        { text: "ตรวจสอบจากแหล่งข่าวที่น่าเชื่อถืออื่นๆ ก่อน", correct: true }
+                    ],
+                    explanation: "ถูกต้อง! ก่อนจะเชื่อหรือแชร์ข่าวใดๆ ควรตรวจสอบความถูกต้องจากหลายๆ แหล่งก่อน เพื่อไม่ให้เรากลายเป็นส่วนหนึ่งของการเผยแพร่ข่าวปลอม"
+                },
+                {
+                    question: "เพื่อนสนิทส่งข้อความมาขอยืมเงินด่วน ควรทำอย่างไร?",
+                    choices: [
+                        { text: "โอนให้ทันทีเพราะเป็นเพื่อนสนิท", correct: false },
+                        { text: "โทรหาเพื่อนเพื่อยืนยันตัวตนก่อนโอน", correct: true }
+                    ],
+                    explanation: "ถูกต้อง! บัญชีของเพื่อนอาจถูกแฮกได้ ควรโทรศัพท์หรือวิดีโอคอลเพื่อยืนยันว่าเป็นเพื่อนจริงๆ ก่อนทำธุรกรรมการเงิน"
+                },
+                {
+                    question: "ตั้งรหัสผ่านสำหรับบัญชีออนไลน์ ควรตั้งแบบไหน?",
+                    choices: [
+                        { text: "ใช้รหัสง่ายๆ เช่น 123456 หรือวันเกิด", correct: false },
+                        { text: "ใช้รหัสผ่านเดียวกันทุกบัญชีจะได้จำง่าย", correct: false },
+                        { text: "ใช้รหัสที่คาดเดายาก มีตัวอักษรใหญ่-เล็ก ตัวเลข และสัญลักษณ์ผสมกัน", correct: true }
+                    ],
+                    explanation: "ถูกต้อง! รหัสผ่านที่คาดเดายากและแตกต่างกันในแต่ละบริการ จะช่วยเพิ่มความปลอดภัยให้กับบัญชีของเราได้มาก"
+                }
+            ];
+
+            let currentScenarioIndex = 0;
+            const scenarioContainer = document.getElementById('cyber-scenario-container');
+            const prevBtn = document.getElementById('prev-scenario-btn');
+            const nextBtn = document.getElementById('next-scenario-btn');
+            const counterEl = document.getElementById('scenario-counter');
+
+            function renderScenario(index) {
+                if(!scenarioContainer) return;
+                const scenario = scenarios[index];
+                let choicesHtml = scenario.choices.map((choice, i) => 
+                    `<button data-correct="${choice.correct}" class="choice-btn w-full md:w-auto block mx-auto mt-3 bg-slate-800 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">${choice.text}</button>`
+                ).join('');
+
+                scenarioContainer.innerHTML = `
+                    <p class="text-lg mb-4">${index + 1}. ${scenario.question}</p>
+                    <div>${choicesHtml}</div>
+                `;
+                updateNavButtons();
+            }
+            
+            function updateNavButtons(){
+                 if(!counterEl || !prevBtn || !nextBtn) return;
+                 counterEl.textContent = `${currentScenarioIndex + 1} / ${scenarios.length}`;
+                 prevBtn.disabled = currentScenarioIndex === 0;
+                 nextBtn.disabled = currentScenarioIndex === scenarios.length - 1;
+                 prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
+                 nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
+            }
+            
+            if(scenarioContainer) {
+                scenarioContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('choice-btn')) {
+                        const isCorrect = e.target.dataset.correct === 'true';
+                        const explanation = scenarios[currentScenarioIndex].explanation;
+
+                        Swal.fire({
+                            title: isCorrect ? 'ถูกต้อง!' : 'ลองดูใหม่นะ',
+                            text: explanation,
+                            icon: isCorrect ? 'success' : 'error',
+                            background: '#1e293b',
+                            color: '#e2e8f0',
+                            confirmButtonText: 'เข้าใจแล้ว',
+                            confirmButtonColor: '#4ade80'
+                        });
+                    }
+                });
+
+                prevBtn.addEventListener('click', () => {
+                    if (currentScenarioIndex > 0) {
+                        currentScenarioIndex--;
+                        renderScenario(currentScenarioIndex);
+                    }
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    if (currentScenarioIndex < scenarios.length - 1) {
+                        currentScenarioIndex++;
+                        renderScenario(currentScenarioIndex);
+                    }
+                });
+                
+                // Initial render
+                renderScenario(currentScenarioIndex);
+            }
+
+
+        });
+    </script>
+</body>
+</html>
+
